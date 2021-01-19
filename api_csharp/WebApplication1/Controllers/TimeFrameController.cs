@@ -42,6 +42,7 @@ namespace Reservation.Controllers
             {
                 result.Add(new TimeFrameResponseModel
                 {
+                    TimeFrameId = e.TimeFrameId,
                     DayOfWeek = e.DayOfWeek,
                     FrameId = e.FrameId,
                     StartTime = e.StartTime,

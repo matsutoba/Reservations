@@ -34,6 +34,24 @@ namespace Reservation.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{id}")]
+        public ActionResult<Customer> GetReservcation(int id)
+        {
+            var query = _context.Reservations
+                .Include("Customer")
+                .Include("TimeFrame")
+                .Include("TimeFrame.Frame")
+                .Include("TimeFrame.Frame.Facility")
+                .Where(e => e.ReservationId == id);
+            var result = query.FirstOrDefault();
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
         [HttpGet("{date}/reservations")]
         public ActionResult<Reservation.Entity.Reservation> Get(string date)
         {

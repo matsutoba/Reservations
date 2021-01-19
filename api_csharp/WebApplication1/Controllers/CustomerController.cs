@@ -86,8 +86,10 @@ namespace Reservation.Controllers
         public ActionResult<Customer> GetReservcation(int id)
         {
             var query = _context.Customers
-                .Include(c => c.Reservations)
-                .Include(c => c.Reservations.Select(r => r.TimeFrame).First())
+                .Include("Reservations")
+                .Include("Reservations.TimeFrame")
+                .Include("Reservations.TimeFrame.Frame")
+                .Include("Reservations.TimeFrame.Frame.Facility")
                 .Where(e => e.CustomerId == id);
             var result = query.FirstOrDefault();
 
@@ -127,7 +129,7 @@ namespace Reservation.Controllers
 
 
         [HttpPost("{id}/reservation")]
-        public ActionResult Post(int id, [FromBody] RegistReservationRequestModel model)
+        public ActionResult PostReservation(int id, [FromBody] RegistReservationRequestModel model)
         {
 
             var customer = _context.Customers.Where(e => e.CustomerId == id).FirstOrDefault();
@@ -149,6 +151,46 @@ namespace Reservation.Controllers
             return Ok();
 
         }
+
+        [HttpPatch("{id}/reservation")]
+        public ActionResult PatchReservation(int id, [FromBody] RegistReservationRequestModel model)
+        {
+
+            var reservation = _context.Reservations
+                .Where(r => r.ReservationId == model.ReservationId)
+                .Where(r => r.CustomerId == id)
+                .FirstOrDefault();
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            reservation.ReservationDate = model.ReservationDate;
+            reservation.TimeFrameId = model.ReservationTimeFrameId;
+            _context.SaveChanges();
+
+            return Ok();
+
+        }
+
+        [HttpDelete("{id}/reservation/{reservationId}")]
+        public ActionResult DeleteReservation(int id, int reservationId)
+        {
+            var reservation = _context.Reservations
+                .Where(r => r.ReservationId == reservationId)
+                .Where(r => r.CustomerId == id)
+                .FirstOrDefault();
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+            _context.Remove(reservation);
+            _context.SaveChanges();
+
+            return Ok();
+
+        }
+
 
     }
 }

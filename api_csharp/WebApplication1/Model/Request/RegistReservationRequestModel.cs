@@ -7,6 +7,8 @@ namespace Reservation.Model.Request
 {
     public class RegistReservationRequestModel
     {
+        public int? ReservationId { get; set; }
+
         public int CustomerId { set; get; }
 
         public string ReservationDate { set; get; }

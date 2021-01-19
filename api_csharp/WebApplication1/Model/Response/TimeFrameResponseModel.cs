@@ -7,6 +7,7 @@ namespace Reservation.Model.Response
 {
     public class TimeFrameResponseModel
     {
+        public int TimeFrameId { get; set; }
         public int DayOfWeek { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }

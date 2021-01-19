@@ -4,23 +4,27 @@ import { getReservations } from '../../apis/reservations';
 import { useQuery } from 'react-query';
 
 type itsPorps = {
-    handleScreenMode: () => void;
+    handleEdit: (reservationId: number) => void;
 }
 
 const ListReservations = (props: itsPorps) => {
-    const { handleScreenMode } = props;
+    const { handleEdit } = props;
 
 
     const [reservationDate, setReservationDate] = useState( dayjs().format('YYYY-MM-DD') );
     const reservations = useQuery(['reservations', reservationDate], ()=>getReservations(reservationDate));
 
-    const handleReservationDateChange = (e) => {
+    const handleReservationDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setReservationDate( e.target.value );
     }
 
+    useEffect(()=>{
+        console.log(reservations)
+    }, [reservations])
+
     return (
         <div>
-            <button className="btn" onClick={handleScreenMode}>新規予約</button>
+            <button className="btn" onClick={() => handleEdit(0)}>新規予約</button>
             <div className='list'>
                 <input type='date' value={reservationDate} onChange={handleReservationDateChange} />
                 <table>
@@ -33,16 +37,18 @@ const ListReservations = (props: itsPorps) => {
                         </tr>
                     </thead>
                     <tbody>
-                    { reservations.data?.data.map(e => {
+                    { 
+                    reservations.data?.data.map(e => {
                         return (
-                            <tr>
+                            <tr key={`r${e.reservationId}`}>
                                 <td>{e.name}</td>
                                 <td>{e.startTime}</td>
                                 <td>{e.facilityName}</td>
-                                <td><button className='btn'>詳細</button></td>
+                                <td><button className='btn' onClick={() => handleEdit(e.reservationId)}>詳細</button></td>
                             </tr>
                         )
-                    })}
+                    })
+                    }
                     </tbody>
                 </table>
             </div>
